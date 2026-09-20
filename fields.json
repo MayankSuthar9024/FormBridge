@@ -1,0 +1,29 @@
+{
+  "honeypot": "company_website",
+  "fields": [
+    {
+      "name": "name",
+      "label": "Your name",
+      "type": "text",
+      "column": "A",
+      "required": true,
+      "maxLength": 100
+    },
+    {
+      "name": "email",
+      "label": "Email",
+      "type": "email",
+      "column": "B",
+      "required": true,
+      "maxLength": 254
+    },
+    {
+      "name": "message",
+      "label": "Message",
+      "type": "textarea",
+      "column": "C",
+      "required": true,
+      "maxLength": 2000
+    }
+  ]
+}

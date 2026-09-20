@@ -1,0 +1,14 @@
+# Secrets — never commit
+.env
+
+# Deps
+node_modules/
+
+# Local fallback log for failed Sheets writes (gitignored so real submissions stay private)
+fallback-log.jsonl
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
