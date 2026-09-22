@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In &bull; FormBridge SaaS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .login-glow {
+      background: radial-gradient(circle at 50% 30%, rgba(124, 92, 252, 0.10), transparent 70%);
+    }
+  </style>
+</head>
+<body class="bg-white min-h-screen flex items-center justify-center p-4 font-sans text-[#6E7191] login-glow relative overflow-hidden">
+  <div class="bg-noise"></div>
+
+  <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-[#F0F0F5] p-8 relative z-10">
+    <div class="text-center mb-8">
+      <a href="/" class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-tr from-[#7C5CFC] to-[#6E56E8] text-white font-extrabold text-xl mb-4 shadow-lg shadow-[#7C5CFC]/20 hover:scale-105 transition">
+        FB
+      </a>
+      <h1 class="text-2xl font-extrabold text-[#14142B]" id="auth-title">Welcome to FormBridge</h1>
+      <p class="text-sm text-[#6E7191] mt-1" id="auth-subtitle">Sign in to manage your forms & submissions</p>
+    </div>
+
+    <!-- Alert message -->
+    <div id="auth-alert" class="hidden mb-6 p-3.5 text-sm rounded-xl border font-medium"></div>
+
+    <form id="auth-form" class="space-y-4">
+      <div>
+        <label for="email" class="block text-xs font-semibold text-[#6E7191] uppercase tracking-wider mb-1.5">Email address</label>
+        <input type="email" id="email" required placeholder="you@company.com"
+          class="w-full rounded-xl border border-[#F0F0F5] bg-white px-3.5 py-2.5 text-sm text-[#14142B] placeholder-[#8A8FA3] focus:border-[#7C5CFC] focus:outline-none focus:ring-1 focus:ring-[#7C5CFC]/40 transition">
+      </div>
+
+      <div>
+        <label for="password" class="block text-xs font-semibold text-[#6E7191] uppercase tracking-wider mb-1.5">Password</label>
+        <input type="password" id="password" required minlength="6" placeholder="••••••••"
+          class="w-full rounded-xl border border-[#F0F0F5] bg-white px-3.5 py-2.5 text-sm text-[#14142B] placeholder-[#8A8FA3] focus:border-[#7C5CFC] focus:outline-none focus:ring-1 focus:ring-[#7C5CFC]/40 transition">
+        <p class="text-xs text-[#8A8FA3] mt-1 hidden" id="password-hint">Must be at least 6 characters</p>
+      </div>
+
+      <button type="submit" id="submit-btn"
+        class="w-full rounded-xl bg-[#7C5CFC] hover:bg-[#6E56E8] py-3 text-sm font-bold text-white transition glow-emerald-btn active:scale-[0.99] mt-2">
+        Sign In
+      </button>
+    </form>
+
+    <div class="mt-6 text-center text-sm text-[#6E7191]">
+      <span id="toggle-prompt">Don't have an account?</span>
+      <button type="button" id="toggle-btn" class="font-semibold text-[#7C5CFC] hover:text-[#6E56E8] hover:underline ml-1">Create one</button>
+    </div>
+
+    <div class="mt-6 pt-5 border-t border-[#F0F0F5] text-center">
+      <a href="/" class="text-xs text-[#8A8FA3] hover:text-[#6E7191] transition">&larr; Back to homepage</a>
+    </div>
+  </div>
+
+  <script>
+    const token = localStorage.getItem("fb_token");
+    if (token) {
+      window.location.href = "/dashboard.html";
+    }
+
+    let isRegisterMode = false;
+    const form = document.getElementById("auth-form");
+    const authTitle = document.getElementById("auth-title");
+    const authSubtitle = document.getElementById("auth-subtitle");
+    const submitBtn = document.getElementById("submit-btn");
+    const toggleBtn = document.getElementById("toggle-btn");
+    const togglePrompt = document.getElementById("toggle-prompt");
+    const alertBox = document.getElementById("auth-alert");
+    const passwordHint = document.getElementById("password-hint");
+
+    toggleBtn.addEventListener("click", () => {
+      isRegisterMode = !isRegisterMode;
+      alertBox.classList.add("hidden");
+      if (isRegisterMode) {
+        authTitle.textContent = "Create an account";
+        authSubtitle.textContent = "Start receiving form submissions to your Google Sheets";
+        submitBtn.textContent = "Sign Up";
+        togglePrompt.textContent = "Already have an account?";
+        toggleBtn.textContent = "Sign in";
+        passwordHint.classList.remove("hidden");
+      } else {
+        authTitle.textContent = "Welcome to FormBridge";
+        authSubtitle.textContent = "Sign in to manage your forms & submissions";
+        submitBtn.textContent = "Sign In";
+        togglePrompt.textContent = "Don't have an account?";
+        toggleBtn.textContent = "Create one";
+        passwordHint.classList.add("hidden");
+      }
+    });
+
+    function showAlert(msg, isError = true) {
+      alertBox.textContent = msg;
+      alertBox.className = isError 
+        ? "mb-6 p-3.5 text-sm rounded-xl border bg-red-50 text-red-600 border-red-200" 
+        : "mb-6 p-3.5 text-sm rounded-xl border bg-[#F5F3FF] text-[#6E56E8] border-[#7C5CFC]/30";
+      alertBox.classList.remove("hidden");
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const endpoint = isRegisterMode ? "/api/auth/register" : "/api/auth/login";
+
+      submitBtn.disabled = true;
+      const originalText = submitBtn.textContent;
+      submitBtn.textContent = "Processing...";
+
+      try {
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          localStorage.setItem("fb_token", data.token);
+          localStorage.setItem("fb_user", JSON.stringify(data.user));
+          window.location.href = "/dashboard.html";
+        } else {
+          showAlert(data.error || "Authentication failed", true);
+        }
+      } catch (err) {
+        showAlert("Network error. Please try again.", true);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+      }
+    });
+  </script>
+</body>
+</html>

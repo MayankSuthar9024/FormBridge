@@ -10,20 +10,43 @@ function getTransporter() {
   });
 }
 
-// Email notify via Gmail App Password (NOT your login password).
-// Resolves silently (warn) when SMTP is unconfigured so local dev works.
-async function sendNotification(clean) {
+// Email notification handler.
+// Supports multi-tenant options: sendNotification({ toEmail, formName, clean })
+// or legacy signature: sendNotification(clean)
+async function sendNotification(options) {
   const transporter = getTransporter();
   if (!transporter) {
     console.warn("[notify] SMTP not configured — skipping email.");
     return;
   }
+
+  let clean;
+  let toEmail;
+  let formName;
+
+  if (options && options.clean) {
+    clean = options.clean;
+    toEmail = options.toEmail || process.env.NOTIFY_TO || process.env.SMTP_USER;
+    formName = options.formName || "FormBridge Form";
+  } else {
+    clean = options || {};
+    toEmail = process.env.NOTIFY_TO || process.env.SMTP_USER;
+    formName = "Contact Form";
+  }
+
+  if (!toEmail) {
+    console.warn("[notify] No destination email specified — skipping.");
+    return;
+  }
+
   const lines = Object.entries(clean).map(([k, v]) => `${k}: ${v}`);
+  const contactName = clean.name || clean.fullName || "Someone";
+
   await transporter.sendMail({
-    from: process.env.SMTP_USER,
-    to: process.env.NOTIFY_TO || process.env.SMTP_USER,
-    subject: `New contact: ${clean.name || "unknown"}`,
-    text: `New FormBridge submission:\n\n${lines.join("\n")}`,
+    from: `FormBridge <${process.env.SMTP_USER}>`,
+    to: toEmail,
+    subject: `New submission: ${formName} (${contactName})`,
+    text: `You received a new submission on "${formName}":\n\n${lines.join("\n")}\n\n---\nSent via FormBridge`,
   });
 }
 

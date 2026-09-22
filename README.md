@@ -1,242 +1,147 @@
-# FormBridge
+# FormBridge — Multi-Tenant Form Backend & SaaS Platform
 
-> Clone this, fill in `.env` + `fields.json`, deploy — get a working contact-form → Google Sheet → email pipeline. No database, no build step, ~300 lines total.
+> A multi-tenant form backend platform (like Formspree) that connects website contact forms directly to each user's own Google Sheet and email notification system.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 ![Node >= 18](https://img.shields.io/badge/node-%3E%3D18-green.svg)
-![No framework frontend](https://img.shields.io/badge/frontend-vanilla%20JS-blue.svg)
-
-Built for the **Persnox Media** website contact form, open-sourced so anyone can fork it for their own site.
+![Architecture: Multi-Tenant](https://img.shields.io/badge/architecture-multi--tenant-blue.svg)
 
 ---
 
-## What it does
+## 🚀 Overview & User Journey
+
+FormBridge is e-evolving from a single-site contact form script into a full multi-tenant SaaS platform. Any user can sign up, create forms, connect their own Google Sheet, and drop embed code into their website.
 
 ```
-Browser form (/public) ──POST /api/submit──▶ Express ──┬──▶ Google Sheet (append row)
-                                                        └──▶ Email notify (Gmail SMTP)
-                                                        └──▶ fallback-log.jsonl (if Sheets fails)
+[ Visitor Form on User Site ]
+              │
+      POST /f/:formId
+              │
+              ▼
+    ┌───────────────────┐
+    │  FormBridge API   │
+    └─────────┬─────────┘
+              ├───────────────────────────────┐
+              ▼                               ▼
+    ┌───────────────────┐           ┌───────────────────┐
+    │ User's Google     │           │ User's Email      │
+    │ Sheet (Row Added) │           │ Notification      │
+    └───────────────────┘           └───────────────────┘
 ```
 
-1. Visitor fills the hosted form (or your own site's form posts to the API).
-2. Backend validates + sanitizes against `fields.json` (`validate.js`).
-3. Appends one row to your Google Sheet via service account (`sheets.js`).
-4. Sends you an email notification (`notify.js`, Nodemailer + Gmail App Password).
-5. Returns `{ success: true }` JSON so the UI can show a confirmation. Nothing is ever silently lost — Sheets failures are logged locally.
-
-## Features
-
-- **Fork-friendly config** — form fields defined once in `fields.json`; backend validation *and* hosted frontend auto-render from it. No HTML editing to add/remove a field.
-- **Hosted form UI** — `/public` (vanilla JS + Tailwind CDN) served statically by Express. Drop-in embeddable via iframe or copy-paste fetch block.
-- **Spam protection** — honeypot hidden field + per-IP rate limiting (`express-rate-limit`).
-- **Sheet-injection safe** — `validator.escape()` on every string + `'` prefix on values starting with `= + - @` (classic CSV/Sheets formula injection).
-- **Resilient** — Sheets write failure → append to `fallback-log.jsonl`, still notify, return honest JSON status.
-- **Observable** — `GET /health` endpoint for uptime monitors.
+### End-to-End Flow
+1. **User Sign Up**: User registers on the FormBridge dashboard.
+2. **Create New Form**: Platform generates a unique `Form ID` and public API endpoint (e.g. `https://formbridge.com/f/8f3a1c`).
+3. **Connect Google Sheet & Email**: User shares their Google Sheet with FormBridge's Service Account email (or connects via Google OAuth in v2) and sets a notification email address.
+4. **Embed Snippet**: Dashboard generates a ready-to-use HTML `<form>` embed snippet or raw fetch endpoint URL.
+5. **Form Submission**: When site visitors submit the form, FormBridge validates fields, guards against spreadsheet formula injection, appends a row to the user's Sheet, and notifies the user via email.
+6. **Dashboard Management**: User views submission history, edits field mapping, and manages API keys.
 
 ---
 
-## Project structure
+## 🛠️ Tech Stack
+
+- **Backend**: Node.js + Express (or Next.js API Routes).
+- **Database**: PostgreSQL via Supabase or Neon.
+- **Authentication**: Supabase Auth or Clerk.
+- **Frontend & Dashboard**: Next.js + Tailwind CSS.
+- **Google Sheets Integration**: `googleapis` Node.js client library using Google Service Account (Shared Service Account for MVP, migrating to per-user Google OAuth in later release).
+- **Email Delivery**: Nodemailer (Gmail SMTP for MVP) → Resend for production deliverability.
+- **Hosting**: Vercel (Frontend & API) + Supabase/Neon (Database).
+
+---
+
+## 🗄️ Core Data Model
 
 ```
-FormBridge/
-├── index.js            # Express server, CORS, static /public, /health, /api/config, /api/submit
-├── validate.js         # validateAndSanitize(body, fieldDefs) — ~20 lines
-├── sheets.js           # appendRow() — googleapis + service-account JWT
-├── notify.js           # sendNotification() — Nodemailer (Gmail App Password)
-├── fields.json         # single source of truth: field defs → Sheet columns
-├── public/
-│   ├── index.html      # Tailwind CDN + HyperUI/Flowbite-inspired markup
-│   ├── form.js         # renders inputs from /api/config, honeypot, fetch submit
-│   └── style.css       # offscreen honeypot class, toasts
-├── .env.example        # all required env vars (no secrets)
-├── vercel.json         # Vercel deploy config
-├── LICENSE (MIT)
-└── CONTRIBUTING.md
+ ┌─────────────────┐       ┌─────────────────┐       ┌─────────────────┐
+ │      users      │       │      forms      │       │   submissions   │
+ ├─────────────────┤       ├─────────────────┤       ├─────────────────┤
+ │ id (PK)         │1     *│ id (PK)         │1     *│ id (PK)         │
+ │ email           ├───────┤ user_id (FK)    ├───────┤ form_id (FK)    │
+ │ auth_provider_id│       │ form_name       │       │ payload (JSONB) │
+ │ created_at      │       │ sheet_id        │       │ status          │
+ └─────────────────┘       │ sheet_range     │       │ created_at      │
+                           │ notify_email    │       └─────────────────┘
+                           │ fields_config   │
+                           │ created_at      │
+                           └─────────────────┘
 ```
 
 ---
 
-## 10-minute setup
+## 🔐 Security & Protection
 
-### 1. Create a Google service account
-
-1. Go to [Google Cloud Console](https://console.cloud.google.com/) → New project (any name, e.g. `formbridge`).
-2. **APIs & Services → Enable APIs** → enable **Google Sheets API**.
-3. **IAM & Admin → Service Accounts → Create** → name it `formbridge-writer` → Create (no roles needed).
-4. Open the account → **Keys → Add key → JSON** → downloads a `.json` file. Keep it private.
-5. From that JSON note `client_email` and `private_key`.
-
-### 2. Share your Sheet
-
-1. Create (or open) the target Google Sheet. First row = headers, e.g. `Name | Email | Message | Timestamp`.
-2. Click **Share** → paste the service-account `client_email` → **Editor** → Send (no email needed).
-3. Copy the **Sheet ID** from the URL: `docs.google.com/spreadsheets/d/<SHEET_ID>/edit`.
-
-### 3. Configure env
-
-```bash
-cp .env.example .env
-```
-
-Fill in `.env` (see table below). **Gotcha that trips up everyone:**
-
-> `GOOGLE_PRIVATE_KEY` in `.env` must keep its literal `\n` characters. In code we run `.replace(/\\n/g, '\n')` to restore real newlines. Paste the key *as-is* inside double quotes, e.g. `"-----BEGIN PRIVATE KEY-----\nABC...\n-----END PRIVATE KEY-----\n"`.
-
-| Var | Example | Notes |
-|-----|---------|-------|
-| `PORT` | `3000` | local port |
-| `CORS_ORIGIN` | `https://persnoxmedia.com` | locked to your domain; forkers change one value |
-| `SHEET_ID` | `1AbC…xyz` | from Sheet URL |
-| `SHEET_RANGE` | `Sheet1!A:D` | must cover your columns |
-| `GOOGLE_CLIENT_EMAIL` | `…@….iam.gserviceaccount.com` | from service-account JSON |
-| `GOOGLE_PRIVATE_KEY` | `"-----BEGIN…\n…\n-----END…\n"` | quoted, `\n` intact (see above) |
-| `SMTP_HOST` | `smtp.gmail.com` | Gmail default |
-| `SMTP_PORT` | `465` | 465 (SSL) |
-| `SMTP_USER` | `you@gmail.com` | your Gmail |
-| `SMTP_PASS` | `xxxx xxxx xxxx xxxx` | **App Password**, not login password (see below) |
-| `NOTIFY_TO` | `you@gmail.com` | where notifications go |
-
-### 4. Run
-
-```bash
-npm install
-npm start
-# → http://localhost:3000  (form)
-# → http://localhost:3000/health
-```
-
-### 5. Deploy (free tier)
-
-- **Render:** New Web Service → repo → Build `npm install`, Start `npm start` → set env vars in dashboard.
-- **Vercel:** `vercel.json` included (routes `/` → static, `/api/*` → server). Set env vars in project settings → Deploy.
+- **Per-Form Rate Limiting**: Rate limits enforced per `formId` + IP so high-volume or abused forms do not affect other tenants.
+- **Server-Side Field Validation**: Strict validation against each form's server-defined `fields_config` — client submissions are never blindly trusted.
+- **Spreadsheet Formula Injection Prevention**: Automatic sanitization of formula triggers (`=`, `+`, `-`, `@`, `\t`, `\r`) with `'` prefixing.
+- **CORS Policies**: Public form endpoints (`POST /f/:formId`) permit cross-origin requests (`*`), while dashboard/management routes are restricted to the platform domain.
+- **Spam Honeypots**: Invisible honeypot fields to trick bots into silent failures.
 
 ---
 
-## Gmail App Password (zero-cost notify path)
+## 🗺️ Phased Roadmap
 
-Resend needs a domain + API key; Gmail App Password works immediately, which is why it's the default:
-
-1. Google Account → **Security → 2-Step Verification** → turn **ON**.
-2. **Security → App passwords** → create one for `Mail` → copy the 16-char code.
-3. Put it in `SMTP_PASS`. Keep it in `.env` only — never commit.
-
----
-
-## `fields.json` — customize without touching code
-
-```json
-{
-  "honeypot": "company_website",
-  "fields": [
-    { "name": "name",    "label": "Your name",  "type": "text",     "column": "A", "required": true,  "maxLength": 100 },
-    { "name": "email",   "label": "Email",      "type": "email",    "column": "B", "required": true,  "maxLength": 254 },
-    { "name": "message", "label": "Message",    "type": "textarea", "column": "C", "required": true,  "maxLength": 2000 }
-  ]
-}
-```
-
-- `column` maps the field to a Sheet column (`sheets.js` orders values by it).
-- `GET /api/config` exposes this (labels/types only) so `form.js` auto-renders matching inputs. Change the JSON → both backend validation and frontend update.
+- [x] **Phase 1 — Core Pipeline Refactor**: Dynamic form config looked up by `Form ID`, multi-tenant endpoint `/f/:formId`, public metadata `/f/:formId/config`, and legacy fallback.
+- [x] **Phase 2 — Database & Auth**: User model & authentication (bcrypt + JWT), form schema with relational data model, zero-config persistent local adapter + PostgreSQL schema (`db/schema.sql`).
+- [x] **Phase 3 — Dashboard UI**: Modern responsive dashboard with sign up/login toggle (`login.html`), forms overview, creation modal with dynamic field builder, and detailed form management (`dashboard.html`).
+- [x] **Phase 4 — Embed Snippet Generator**: Multi-format code generator for HTML `<form>`, JavaScript `fetch()`, and `<iframe>`, with one-click clipboard copying.
+- [x] **Phase 5 — Submission History & Fallbacks**: Real-time submissions table with live status tracking (`success`, `sheets_failed`, `spam_rejected`), error diagnostics, and offline fallback logging (`fallback-log.jsonl`).
+- [ ] **Phase 6 — Public Launch & Polish**:
+  - [x] High-converting landing page (`public/index.html`)
+  - [x] URL-encoded & JSON multi-format submission support with custom `_next` redirect
+  - [x] Rate limiting per Form ID + IP
+  - [ ] Standalone Terms of Service & Privacy Policy pages
+  - [ ] Optional Google OAuth v2 (as an alternative to the Service Account flow)
+  - [ ] Direct cloud PostgreSQL connection driver when `DATABASE_URL` is configured
 
 ---
 
-## API contract
+## 📡 API Contract (Phase 1 Target)
+
+### `POST /f/:formId`
+Public form submission endpoint.
+- **Body**: JSON payload matching the form's `fields_config`.
+- **Response**: `{ "success": true }` or error details.
+
+### `GET /f/:formId/config`
+Public endpoint returning field metadata for dynamic frontend rendering and embed snippet builders.
 
 ### `GET /health`
-
-```json
-{ "status": "ok", "uptime": 123.4, "timestamp": "2026-09-20T09:00:00.000Z" }
-```
-
-### `GET /api/config`
-
-Returns `fields.json` for the frontend renderer.
-
-### `POST /api/submit`
-
-Request (`Content-Type: application/json`):
-
-```json
-{ "name": "Ada", "email": "ada@example.com", "message": "Hello!", "company_website": "" }
-```
-
-- `company_website` is the honeypot — humans leave it blank (it's offscreen via CSS, not `display:none`, so bots still fill it). If non-empty → silent `{ "success": true }` (bot fooled, nothing written).
-- Rate limited: ~10 requests / 15 min / IP (tune in `index.js`).
-
-Responses:
-
-```json
-// full success
-{ "success": true }
-// Sheets failed but logged + emailed
-{ "success": false, "logged": true, "error": "sheets_write_failed" }
-// validation error
-{ "success": false, "errors": ["email is invalid"] }
-```
-
-Fallback: failed Sheets writes are appended to `fallback-log.jsonl` (`{ timestamp, data, error }` per line) for manual replay.
+System health check returning server status, uptime, and timestamp.
 
 ---
 
-## Use the form on your own site
+## ⚙️ Quick Setup for Local Development
 
-Hosted form lives at `https://<your-deploy>/` . Two embed options:
+### 1. Google Service Account Setup
+1. Create a project in [Google Cloud Console](https://console.cloud.google.com/).
+2. Enable the **Google Sheets API**.
+3. Create a Service Account and generate a **JSON Key**.
+4. Note the `client_email` and `private_key` from the key file.
 
-**Option A — iframe (easiest):**
+### 2. Configure Environment Variables
+Copy `.env.example` to `.env` and configure:
 
-```html
-<iframe src="https://<your-deploy>/" width="100%" height="620" style="border:0" title="Contact form"></iframe>
+```env
+PORT=3000
+GOOGLE_CLIENT_EMAIL="your-service-account@project.iam.gserviceaccount.com"
+GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+SMTP_HOST="smtp.gmail.com"
+SMTP_PORT=465
+SMTP_USER="your-email@gmail.com"
+SMTP_PASS="your-app-password"
 ```
 
-**Option B — native POST from any site:**
-
-```html
-<form id="contact">
-  <input name="name" required maxlength="100" />
-  <input name="email" type="email" required />
-  <textarea name="message" required></textarea>
-  <!-- honeypot: keep offscreen, not display:none -->
-  <input name="company_website" class="hp" tabindex="-1" autocomplete="off" />
-  <button>Send</button>
-</form>
-<script>
-fetch("https://<your-deploy>/api/submit", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(Object.fromEntries(new FormData(document.querySelector("#contact"))))
-});
-</script>
+### 3. Run Server
+```bash
+npm install
+npm run dev
+# Server running at http://localhost:3000
 ```
-
-Set `CORS_ORIGIN` to your site's domain so browsers allow it.
 
 ---
 
-## Security notes
+## 📄 License
 
-- Honeypot + rate limiting are basic spam filters, not CAPTCHA. Add Cloudflare Turnstile/hCaptcha if spam persists.
-- All strings are HTML-escaped before Sheet write; formula-leading cells (`=`, `+`, `-`, `@`) are `'`-prefixed.
-- Never commit `.env` or the service-account JSON. `.gitignore` covers both.
-
-## Troubleshooting
-
-| Symptom | Likely cause |
-|---------|--------------|
-| `invalid_grant` / auth error | `GOOGLE_PRIVATE_KEY` newlines broken — check the `\n` note above |
-| `The caller does not have permission` | Sheet not shared with service-account email as Editor |
-| `Unable to parse range` | `SHEET_RANGE` tab name mismatch (e.g. `Sheet1` vs `Form`) |
-| No email arrives | Wrong App Password, or Gmail blocked sign-in — regenerate App Password; check spam |
-| CORS error in browser | `CORS_ORIGIN` doesn't match the site origin exactly |
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md). Fork → branch → PR. No secrets in PRs, please.
-
-## License
-
-MIT — see [LICENSE](LICENSE).
-
-## Credits
-
-- Form markup direction: [HyperUI](https://github.com/markmead/hyperui) + [Flowbite](https://github.com/themesberg/flowbite) (plain HTML/Tailwind snippets, no framework). shadcn/ui was deliberately avoided — React-only, would add a build toolchain this project doesn't need.
-- Tailwind via CDN for the single static page; zero frontend dependencies in `package.json`.
+MIT License — see [LICENSE](LICENSE).

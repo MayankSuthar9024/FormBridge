@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact &bull; FormBridge</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    .form-glow {
+      background: radial-gradient(circle at 50% 20%, rgba(124, 92, 252, 0.08), transparent 70%);
+    }
+  </style>
+</head>
+<body class="bg-white text-[#6E7191] min-h-screen flex flex-col items-center justify-center p-4 form-glow relative">
+  <div class="bg-noise"></div>
+
+  <!-- Top Navigation Link -->
+  <div class="w-full max-w-xl flex justify-between items-center mb-5 px-2 relative z-10">
+    <a href="/" class="flex items-center gap-2 text-[#6E7191] hover:text-[#14142B] transition group">
+      <div class="w-6 h-6 rounded-lg bg-[#7C5CFC] text-white font-extrabold flex items-center justify-center text-xs group-hover:scale-105 transition">FB</div>
+      <span class="text-xs font-bold text-[#8A8FA3] tracking-wider uppercase">FormBridge</span>
+    </a>
+    <a href="/login.html" class="text-xs font-semibold text-[#6E56E8] hover:text-[#7C5CFC] bg-[#F5F3FF] px-3.5 py-1.5 rounded-xl border border-[#F0F0F5] hover:border-[#7C5CFC]/40 shadow-sm transition">
+      Dashboard / Sign In &rarr;
+    </a>
+  </div>
+
+  <main class="w-full max-w-xl bg-white rounded-2xl shadow-xl border border-[#F0F0F5] p-6 sm:p-8 relative z-10">
+    <h1 class="text-2xl font-extrabold text-[#14142B] tracking-tight">Contact us</h1>
+    <p class="mt-1 text-xs text-[#6E7191]">Fill in the fields below to submit this form directly to Google Sheets.</p>
+
+    <form id="contact" class="mt-6 space-y-4" novalidate>
+      <div id="fields" class="space-y-4">
+        <p class="text-xs text-[#8A8FA3]">Loading form fields…</p>
+      </div>
+      <button
+        type="submit"
+        id="send-btn"
+        class="w-full rounded-xl bg-[#7C5CFC] hover:bg-[#6E56E8] px-4 py-3 text-sm font-bold text-white transition glow-emerald-btn active:scale-[0.99] disabled:opacity-50 mt-2"
+      >
+        Send Message
+      </button>
+      <p id="status" class="text-xs min-h-[1.25rem] font-medium" role="status" aria-live="polite"></p>
+    </form>
+  </main>
+
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+  <script src="/form.js" defer></script>
+</body>
+</html>

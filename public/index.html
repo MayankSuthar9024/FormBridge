@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FormBridge &bull; Connect Website Forms to Google Sheets</title>
+  <meta name="description" content="FormBridge is the modern multi-tenant form backend. Point your forms to FormBridge and stream submissions directly to your own Google Sheet." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    .gradient-text {
+      background: linear-gradient(135deg, #7C5CFC 0%, #6E56E8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-radial {
+      background: radial-gradient(circle at 50% -10%, rgba(124, 92, 252, 0.10), transparent 70%),
+                  radial-gradient(circle at 85% 20%, rgba(110, 86, 232, 0.06), transparent 50%);
+    }
+  </style>
+</head>
+<body class="bg-white text-[#6E7191] font-sans antialiased selection:bg-[#7C5CFC] selection:text-white min-h-screen relative overflow-x-hidden">
+  <div class="bg-noise"></div>
+
+  <!-- NAVBAR -->
+  <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-[#F0F0F5]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2.5 group">
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#7C5CFC] to-[#6E56E8] text-white font-extrabold flex items-center justify-center text-sm shadow-md shadow-[#7C5CFC]/20 group-hover:scale-105 transition">
+          FB
+        </div>
+        <span class="font-bold text-lg tracking-tight text-[#14142B]">FormBridge</span>
+        <span class="text-[10px] uppercase tracking-wider bg-[#F5F3FF] text-[#6E56E8] px-2 py-0.5 rounded-full font-bold border border-[#7C5CFC]/30">SaaS</span>
+      </a>
+
+      <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-[#6E7191]">
+        <a href="#how-it-works" class="hover:text-[#6E56E8] transition">How It Works</a>
+        <a href="#features" class="hover:text-[#6E56E8] transition">Features</a>
+        <a href="#embed" class="hover:text-[#6E56E8] transition">Code Snippets</a>
+        <a href="#faq" class="hover:text-[#6E56E8] transition">FAQ</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <a href="/login.html" id="nav-login-btn" class="text-sm font-semibold text-[#6E7191] hover:text-[#14142B] px-3 py-2 transition">
+          Sign In
+        </a>
+        <a href="/login.html" id="nav-cta-btn" class="inline-flex items-center gap-1 text-sm font-bold text-white bg-[#7C5CFC] hover:bg-[#6E56E8] px-4 py-2 rounded-xl transition glow-emerald-btn active:scale-[0.99]">
+          Get Started &rarr;
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="relative pt-24 pb-24 hero-radial border-b border-[#F0F0F5]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+      <div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[#F5F3FF] border border-[#7C5CFC]/25 text-xs font-semibold text-[#6E56E8] mb-8 shadow-lg shadow-[#7C5CFC]/5">
+        <span class="w-2 h-2 rounded-full bg-[#7C5CFC] animate-pulse"></span>
+        Multi-Tenant Form Backend for Google Sheets
+      </div>
+
+      <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-[#14142B] max-w-5xl mx-auto leading-[1.12]">
+        Connect website forms to <br class="hidden sm:inline" />
+        <span class="gradient-text">Google Sheets</span> in seconds.
+      </h1>
+
+      <p class="mt-6 text-lg sm:text-xl text-[#6E7191] max-w-2xl mx-auto font-normal leading-relaxed">
+        Point your form's action or fetch URL to FormBridge. Receive submissions in your personal Google Sheet with built-in spam filtering, formula injection defense, and instant alerts.
+      </p>
+
+      <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href="/login.html" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-[#7C5CFC] text-white font-bold text-base hover:bg-[#6E56E8] transition glow-emerald-btn active:scale-[0.99]">
+          Start Building Free
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </a>
+        <a href="/dashboard.html" class="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 rounded-xl bg-white text-[#14142B] font-semibold text-base border border-[#F0F0F5] hover:border-[#7C5CFC]/40 hover:bg-[#F5F3FF] transition">
+          Open Dashboard
+        </a>
+      </div>
+
+      <p class="mt-4 text-xs text-[#8A8FA3]">Zero backend code required &bull; 100% compatible with HTML, React, Webflow, Framer, WordPress</p>
+
+      <!-- VISUAL PIPELINE SHOWCASE (dark featured card) -->
+      <div class="mt-16 max-w-5xl mx-auto bg-[#1E1B3A] rounded-3xl p-6 sm:p-8 shadow-2xl border border-[#2A2550] text-left relative overflow-hidden">
+        <div class="flex items-center justify-between mb-6 border-b border-white/10 pb-4">
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+            <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+            <div class="w-3 h-3 rounded-full bg-[#7C5CFC]"></div>
+            <span class="text-xs text-[#8A8FA3] font-mono ml-2">formbridge_pipeline.ts</span>
+          </div>
+          <span class="text-xs font-mono text-[#A38DFC] flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#7C5CFC]"></span> Live Pipeline
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Step 1 Card -->
+          <div class="bg-[#2A2550] rounded-2xl p-5 border border-white/10 flex flex-col justify-between">
+            <div>
+              <div class="text-xs font-bold uppercase tracking-wider text-[#A38DFC] mb-2 flex items-center gap-1.5">
+                <span>01</span> Your Website Form
+              </div>
+              <pre class="text-[11px] text-gray-300 overflow-x-auto leading-relaxed font-mono"><code>&lt;form action="<span class="text-[#A38DFC]">/f/8f3a1c</span>"&gt;
+  &lt;input name="name" /&gt;
+  &lt;input name="email" /&gt;
+  &lt;textarea name="msg"&gt;&lt;/textarea&gt;
+  &lt;button&gt;Send&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+            </div>
+            <p class="text-[11px] text-[#8A8FA3] mt-4">Drop your unique endpoint URL into any existing form.</p>
+          </div>
+
+          <!-- Step 2 Card -->
+          <div class="bg-[#2A2550] rounded-2xl p-5 border border-white/10 flex flex-col justify-between">
+            <div>
+              <div class="text-xs font-bold uppercase tracking-wider text-[#A38DFC] mb-2 flex items-center gap-1.5">
+                <span>02</span> FormBridge Engine
+              </div>
+              <ul class="text-xs text-gray-300 space-y-2 mt-3 font-medium">
+                <li class="flex items-center gap-2">
+                  <span class="text-[#7C5CFC] font-bold">✔</span> Per-Form Rate Limiting
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="text-[#7C5CFC] font-bold">✔</span> Invisible Honeypot Guard
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="text-[#7C5CFC] font-bold">✔</span> Formula Injection Sanitizer
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="text-[#7C5CFC] font-bold">✔</span> Instant Email Alert Trigger
+                </li>
+              </ul>
+            </div>
+            <div class="text-[11px] font-mono text-[#A38DFC] bg-[#1E1B3A] p-2 rounded-xl border border-[#7C5CFC]/25 mt-4 flex items-center justify-between">
+              <span>Status: 200 OK</span>
+              <span class="text-[10px] text-[#A38DFC]/70">Processed in 28ms</span>
+            </div>
+          </div>
+
+          <!-- Step 3 Card -->
+          <div class="bg-[#2A2550] rounded-2xl p-5 border border-white/10 flex flex-col justify-between">
+            <div>
+              <div class="text-xs font-bold uppercase tracking-wider text-[#A38DFC] mb-2 flex items-center gap-1.5">
+                <span>03</span> Destination Google Sheet
+              </div>
+              <div class="bg-[#1E1B3A] rounded-xl p-3 text-xs text-gray-200 overflow-x-auto border border-white/10 font-mono mt-3">
+                <table class="w-full text-left">
+                  <tr class="border-b border-white/10 text-[#A38DFC] font-semibold text-[11px]">
+                    <th class="pr-2 pb-1">Name</th>
+                    <th class="pr-2 pb-1">Email</th>
+                    <th class="pb-1">Timestamp</th>
+                  </tr>
+                  <tr class="text-[11px]">
+                    <td class="pr-2 pt-1 text-white font-medium">Sarah J.</td>
+                    <td class="pr-2 pt-1 text-gray-400">sarah@co.com</td>
+                    <td class="pt-1 text-[#A38DFC]">12:38 PM</td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+            <p class="text-[11px] text-[#8A8FA3] mt-4">Rows append directly to your own sheet tab. Zero third-party lock-in.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS SECTION -->
+  <section id="how-it-works" class="py-24 border-b border-[#F0F0F5] relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <h2 class="text-xs font-bold uppercase tracking-widest text-[#6E56E8] mb-2">Effortless Setup</h2>
+        <h3 class="text-3xl font-extrabold text-[#14142B] tracking-tight sm:text-4xl">
+          Up and running in 3 simple steps
+        </h3>
+        <p class="mt-4 text-[#6E7191] text-base">No complex API keys, no server configurations, and no webhook debugging.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Step 1 -->
+        <div class="bg-white p-8 rounded-2xl border border-[#F0F0F5] shadow-sm hover:border-[#7C5CFC]/40 transition duration-300 relative group">
+          <div class="w-10 h-10 rounded-xl bg-[#F5F3FF] border border-[#7C5CFC]/20 text-[#7C5CFC] font-bold flex items-center justify-center text-sm mb-6 group-hover:scale-110 transition">
+            1
+          </div>
+          <h4 class="text-lg font-bold text-[#14142B] mb-2">Create Your Form</h4>
+          <p class="text-sm text-[#6E7191] leading-relaxed">
+            Name your form and define your field mapping. FormBridge instantly assigns a unique Form ID and public endpoint.
+          </p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="bg-white p-8 rounded-2xl border border-[#F0F0F5] shadow-sm hover:border-[#7C5CFC]/40 transition duration-300 relative group">
+          <div class="w-10 h-10 rounded-xl bg-[#F5F3FF] border border-[#6E56E8]/20 text-[#6E56E8] font-bold flex items-center justify-center text-sm mb-6 group-hover:scale-110 transition">
+            2
+          </div>
+          <h4 class="text-lg font-bold text-[#14142B] mb-2">Connect Google Sheet</h4>
+          <p class="text-sm text-[#6E7191] leading-relaxed">
+            Share your Google Sheet with our automated service account as Editor and paste your Sheet ID into your form settings.
+          </p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="bg-white p-8 rounded-2xl border border-[#F0F0F5] shadow-sm hover:border-[#7C5CFC]/40 transition duration-300 relative group">
+          <div class="w-10 h-10 rounded-xl bg-[#F5F3FF] border border-[#7C5CFC]/20 text-[#7C5CFC] font-bold flex items-center justify-center text-sm mb-6 group-hover:scale-110 transition">
+            3
+          </div>
+          <h4 class="text-lg font-bold text-[#14142B] mb-2">Embed & Collect</h4>
+          <p class="text-sm text-[#6E7191] leading-relaxed">
+            Copy the pre-built HTML form snippet or fetch snippet into your website code and watch submissions stream in live.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES GRID -->
+  <section id="features" class="py-24 border-b border-[#F0F0F5] bg-[#F5F3FF]/50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <h2 class="text-xs font-bold uppercase tracking-widest text-[#6E56E8] mb-2">Platform Capabilities</h2>
+        <h3 class="text-3xl font-extrabold text-[#14142B] tracking-tight sm:text-4xl">
+          Engineered for speed, safety, and reliability
+        </h3>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="p-6 rounded-2xl border border-[#F0F0F5] bg-white shadow-sm hover:border-[#7C5CFC]/40 transition duration-300">
+          <div class="w-10 h-10 rounded-xl bg-[#F5F3FF] border border-[#7C5CFC]/20 text-[#7C5CFC] flex items-center justify-center mb-4">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          </div>
+          <h4 class="font-bold text-[#14142B] mb-1">Per-Form Rate Limiting</h4>
+          <p class="text-sm text-[#6E7191]">Rate limits are enforced per Form ID and client IP, isolating traffic and preventing bad actors from taking down other forms.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl border border-[#F0F0F5] bg-white shadow-sm hover:border-[#7C5CFC]/40 transition duration-300">
+          <div class="w-10 h-10 rounded-xl bg-[#F5F3FF] border border-[#6E56E8]/20 text-[#6E56E8] flex items-center justify-center mb-4">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          </div>
+          <h4 class="font-bold text-[#14142B] mb-1">Formula Injection Defense</h4>
+          <p class="text-sm text-[#6E7191]">Automatic sanitization for cells starting with <code>=</code>, <code>+</code>, <code>-</code>, or <code>@</code> to neutralize spreadsheet macro exploits.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl border border-[#F0F0F5] bg-white shadow-sm hover:border-[#7C5CFC]/40 transition duration-300">
+          <div class="w-10 h-10 rounded-xl bg-[#F5F3FF] border border-[#7C5CFC]/20 text-[#7C5CFC] flex items-center justify-center mb-4">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+          </div>
+          <h4 class="font-bold text-[#14142B] mb-1">Instant Email Alerts</h4>
+          <p class="text-sm text-[#6E7191]">Get notified the instant a visitor submits. Configurable per-form destination email with formatted inquiry summaries.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl border border-[#F0F0F5] bg-white shadow-sm hover:border-[#7C5CFC]/40 transition duration-300">
+          <div class="w-10 h-10 rounded-xl bg-[#F5F3FF] border border-[#7C5CFC]/20 text-[#7C5CFC] flex items-center justify-center mb-4">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7c0-2-1-3-3-3H7C5 4 4 5 4 7zm4 3h8M8 14h5"/></svg>
+          </div>
+          <h4 class="font-bold text-[#14142B] mb-1">Live Submissions Log</h4>
+          <p class="text-sm text-[#6E7191]">Review all historical submissions inside your SaaS dashboard with live status indicators even without opening Google Sheets.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl border border-[#F0F0F5] bg-white shadow-sm hover:border-[#7C5CFC]/40 transition duration-300">
+          <div class="w-10 h-10 rounded-xl bg-[#F5F3FF] border border-[#6E56E8]/20 text-[#6E56E8] flex items-center justify-center mb-4">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+          </div>
+          <h4 class="font-bold text-[#14142B] mb-1">Open CORS Architecture</h4>
+          <p class="text-sm text-[#6E7191]">Submit from any domain, static site, JAMstack app, or client-side framework with zero CORS blockers.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl border border-[#F0F0F5] bg-white shadow-sm hover:border-[#7C5CFC]/40 transition duration-300">
+          <div class="w-10 h-10 rounded-xl bg-[#F5F3FF] border border-[#7C5CFC]/20 text-[#7C5CFC] flex items-center justify-center mb-4">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+          </div>
+          <h4 class="font-bold text-[#14142B] mb-1">Fail-Safe Fallback</h4>
+          <p class="text-sm text-[#6E7191]">If Google Sheets is temporarily unreachable, submissions are saved locally and alerted so no leads are ever lost.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CODE EMBED SHOWCASE -->
+  <section id="embed" class="py-24 border-b border-[#F0F0F5]">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto mb-12">
+        <h2 class="text-xs font-bold uppercase tracking-widest text-[#6E56E8] mb-2">Developer Friendly</h2>
+        <h3 class="text-3xl font-extrabold tracking-tight sm:text-4xl text-[#14142B]">
+          Drop into your site with zero friction
+        </h3>
+      </div>
+
+      <div class="bg-[#1E1B3A] rounded-2xl border border-[#2A2550] overflow-hidden shadow-2xl">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-[#2A2550]/70">
+          <div class="flex gap-2">
+            <span class="px-3 py-1 text-xs font-semibold rounded-lg bg-[#7C5CFC]/15 text-[#A38DFC] border border-[#7C5CFC]/30">HTML &lt;form&gt;</span>
+          </div>
+          <span class="text-xs text-[#8A8FA3] font-mono">Instant Copy-Paste Snippet</span>
+        </div>
+
+        <div class="p-6">
+          <pre class="text-xs sm:text-sm text-gray-300 overflow-x-auto leading-relaxed font-mono"><code><span class="text-[#8A8FA3]">&lt;!-- Drop this into your website --&gt;</span>
+&lt;form action="<span class="text-[#A38DFC] font-bold">https://yourdomain.com/f/8f3a1c</span>" method="POST"&gt;
+  &lt;label for="name"&gt;Your Name&lt;/label&gt;
+  &lt;input id="name" name="name" type="text" required /&gt;
+
+  &lt;label for="email"&gt;Email Address&lt;/label&gt;
+  &lt;input id="email" name="email" type="email" required /&gt;
+
+  &lt;label for="message"&gt;Message&lt;/label&gt;
+  &lt;textarea id="message" name="message" required&gt;&lt;/textarea&gt;
+
+  <span class="text-[#8A8FA3]">&lt;!-- Honeypot field (hidden from users to block bots) --&gt;</span>
+  &lt;input type="text" name="_gotcha" style="display:none !important;" tabindex="-1" autocomplete="off" /&gt;
+
+  &lt;button type="submit"&gt;Send Message&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ SECTION -->
+  <section id="faq" class="py-24 border-b border-[#F0F0F5] bg-[#F5F3FF]/40">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h3 class="text-3xl font-extrabold text-[#14142B] tracking-tight sm:text-4xl">Frequently Asked Questions</h3>
+      </div>
+
+      <div class="space-y-6">
+        <div class="p-6 rounded-2xl border border-[#F0F0F5] bg-white shadow-sm">
+          <h4 class="font-bold text-[#14142B] text-base">Do I need to verify an app with Google Cloud?</h4>
+          <p class="mt-2 text-sm text-[#6E7191] leading-relaxed">
+            No! With our shared service account approach, all you do is share your Google Sheet with our service account email (as Editor). There is zero OAuth consent screen or app verification needed.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-2xl border border-[#F0F0F5] bg-white shadow-sm">
+          <h4 class="font-bold text-[#14142B] text-base">Can I create multiple forms for different websites?</h4>
+          <p class="mt-2 text-sm text-[#6E7191] leading-relaxed">
+            Yes. You can create as many forms as you need. Each form has its own Form ID, custom fields, destination Google Sheet, and notification recipient.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-2xl border border-[#F0F0F5] bg-white shadow-sm">
+          <h4 class="font-bold text-[#14142B] text-base">What happens if Google Sheets goes down or has an error?</h4>
+          <p class="mt-2 text-sm text-[#6E7191] leading-relaxed">
+            FormBridge never silently drops your leads. Submissions are saved to the internal database and appended to a fallback log, and email alerts are still dispatched.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA BANNER -->
+  <section class="py-24 text-center relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#7C5CFC]/5 to-transparent pointer-events-none"></div>
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <h3 class="text-3xl sm:text-4xl font-extrabold text-[#14142B] tracking-tight">Ready to streamline your website forms?</h3>
+      <p class="mt-4 text-[#6E7191] text-base max-w-xl mx-auto">Create your account and launch your first form endpoint in less than two minutes.</p>
+      <div class="mt-8">
+        <a href="/login.html" class="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-[#7C5CFC] text-white font-bold text-base hover:bg-[#6E56E8] transition glow-emerald-btn active:scale-[0.99]">
+          Get Started Now &rarr;
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-[#F0F0F5] py-12 text-sm text-[#8A8FA3] bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2.5">
+        <div class="w-6 h-6 rounded-lg bg-[#7C5CFC] text-white font-bold flex items-center justify-center text-xs">FB</div>
+        <span class="font-bold text-[#6E7191]">FormBridge</span>
+        <span class="text-xs text-[#8A8FA3]">&bull; Multi-Tenant SaaS Platform</span>
+      </div>
+
+      <div class="flex items-center gap-6">
+        <a href="/dashboard.html" class="hover:text-[#6E56E8] transition">Dashboard</a>
+        <a href="/login.html" class="hover:text-[#6E56E8] transition">Sign In</a>
+        <a href="https://github.com" target="_blank" class="hover:text-[#6E56E8] transition">GitHub</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Update navbar buttons if user is already logged in
+    const token = localStorage.getItem("fb_token");
+    if (token) {
+      const navLoginBtn = document.getElementById("nav-login-btn");
+      const navCtaBtn = document.getElementById("nav-cta-btn");
+      if (navLoginBtn) {
+        navLoginBtn.textContent = "Dashboard";
+        navLoginBtn.href = "/dashboard.html";
+      }
+      if (navCtaBtn) {
+        navCtaBtn.textContent = "Open Dashboard →";
+        navCtaBtn.href = "/dashboard.html";
+      }
+    }
+  </script>
+</body>
+</html>

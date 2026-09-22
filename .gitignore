@@ -1,11 +1,15 @@
 # Secrets — never commit
 .env
+service-account*.json
+*credentials*.json
+*key*.json
 
 # Deps
 node_modules/
 
 # Local fallback log for failed Sheets writes (gitignored so real submissions stay private)
 fallback-log.jsonl
+.data/
 
 # OS / editor
 .DS_Store
